@@ -1,14 +1,24 @@
 const express=require("express")
 const mongoose =require("mongoose")
 const {gql}=require('apollo-server-express')
+const { ApolloServer } = require('apollo-server-express');
+const app = express();
 const articleSchema=new mongoose.Schema({
     title:{type:String,require:true},
     text:{type:String,required:true},
     date:{type:Date,required:true}
 
 })
-const Page=mongoose.model('Todo',articleSchema);
-//connection
+const Page=mongoose.model('Page',articleSchema);
+mongoose.connect('mongodb+srv://dassudipto200:12345@cluster0.bgz5hvv.mongodb.net/?retryWrites=true&w=majority', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', () => console.log('Connected to MongoDB'));
+
 
 //Graphql
 const typeDefs=gql`
@@ -19,14 +29,14 @@ type Page{
 
 }
 type Query{
-    pages:[Pages!]
+    pages:[Page!]!
 }
 type Mutation{
     addPage(title:String!,text:String!):Page!
     deletePage(id:ID!):Page!
 }
 `
-const resolver={
+const resolvers={
     Query:{
        pages:() =>Page.find()
     },
@@ -36,18 +46,20 @@ const resolver={
            await page.save()
            return todo
         },
-        deleteTodo:async (_,{id})=>{
+        deletePage:async (_,{id})=>{
             const page=await Page.findById(id)
             await todo.remove()
             return todo
         }
     }
 }
-const server= new ApolloServer({
-    typeDefs,
-    resolver
-});
-server.applyMiddleware({app})
-app.listen({port:3000},()=>{
-    console.log("listention")
-})
+
+async function startApolloServer() {
+    const app = express();
+    const server = new ApolloServer({ typeDefs, resolvers });
+    await server.start(); // <== Add this line to start the server
+    server.applyMiddleware({ app });
+    await new Promise(resolve => app.listen({ port: 4000 }, resolve));
+    console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`);
+  }
+startApolloServer()
