@@ -1,0 +1,27 @@
+{
+  "name": "graph-ql-todo-appp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start":"node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sudip200/Graph-ql-todo-appp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sudip200/Graph-ql-todo-appp/issues"
+  },
+  "homepage": "https://github.com/Sudip200/Graph-ql-todo-appp#readme",
+  "dependencies": {
+    "apollo-server-express": "^3.11.1",
+    "express": "^4.18.2",
+    "graphql": "^16.6.0",
+    "mongoose": "^6.9.2"
+  }
+}
