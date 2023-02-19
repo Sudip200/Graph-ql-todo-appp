@@ -34,22 +34,37 @@ type Query{
 type Mutation{
     addPage(title:String!,text:String!):Page!
     deletePage(id:ID!):Page!
+    updatePage(id:ID!):Page!
 }
 `
 const resolvers={
     Query:{
-       pages:() =>Page.find()
+       pages:async () => {
+        try {
+          const pages = await Page.find({});
+          return pages;
+        } catch (error) {
+          throw new Error(error);
+        }
+      }
     },
     Mutation:{
         addPage:async (_,{title,text})=>{
-           const page=new Page({titel,text});
+           const page=new Page({title,text,date: new Date()
+        });
            await page.save()
-           return todo
+           return page
         },
         deletePage:async (_,{id})=>{
             const page=await Page.findById(id)
             await todo.remove()
-            return todo
+            return page
+        },
+        updatePage:async (_,{id,title,text})=>{
+            const page=await Page.findById(id)
+            page.title=title
+            page.text=text
+            await page.save()
         }
     }
 }
